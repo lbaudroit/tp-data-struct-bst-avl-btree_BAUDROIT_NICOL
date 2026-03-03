@@ -84,5 +84,16 @@ int main() {
     root->right = node_new('G');
     root->right->right = node_new('I');
     root->right->right->left = node_new('H');
-  preorder(root, print_node);
+    TreeNode *root2 = node_new('F');
+    bst_insert(&root2, 'B');
+    bst_insert(&root2, 'A');
+    bst_insert(&root2, 'D');
+    bst_insert(&root2, 'C');
+    bst_insert(&root2, 'E');
+    bst_insert(&root2, 'G');
+    bst_insert(&root2, 'I');
+    bst_insert(&root2, 'H');
+    preorder(root, print_node);
+    printf("\n");
+    preorder(root2, print_node);
 }

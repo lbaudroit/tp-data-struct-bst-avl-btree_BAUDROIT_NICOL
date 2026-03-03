@@ -46,27 +46,43 @@ struct tree_node *node_new(int data) {
     return n;
 }
 
+struct tree_node *bst_insert(struct tree_node **root, int data) {
+    if (!*root) {
+        *root = node_new(data);
+        return *root;
+    }
+
+    struct tree_node *current = *root;
+    struct tree_node *parent = NULL;
+
+    while (current) {
+        parent = current;
+        if (data < current->data) {
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+    }
+
+    struct tree_node *new_node = node_new(data);
+    new_node->parent = parent;
+    if (data < parent->data) {
+        parent->left = new_node;
+    } else {
+        parent->right = new_node;
+    }
+    return new_node;
+}
+
 int main() {
-  TreeNode root = {
-    .data = 'F',
-    .left = &(TreeNode){
-      .data = 'B',
-      .left = &(TreeNode){ .data = 'A', .left = NULL, .right = NULL, },
-      .right = &(TreeNode){
-        .data = 'D',
-        .left = &(TreeNode){ .data = 'C', .left = NULL, .right = NULL, },
-        .right = &(TreeNode){ .data = 'E', .left = NULL, .right = NULL, },
-      },
-    },
-    .right = &(TreeNode){
-      .data = 'G',
-      .left = NULL,
-      .right = &(TreeNode){
-        .data = 'I',
-        .left = &(TreeNode){ .data = 'H', .left = NULL, .right = NULL, },
-        .right = NULL,
-      },
-    },
-  };
-  preorder(&root, print_node);
+    TreeNode *root = node_new('F');
+    root->left = node_new('B');
+    root->left->left = node_new('A');
+    root->left->right = node_new('D');
+    root->left->right->left = node_new('C');
+    root->left->right->right = node_new('E');
+    root->right = node_new('G');
+    root->right->right = node_new('I');
+    root->right->right->left = node_new('H');
+  preorder(root, print_node);
 }

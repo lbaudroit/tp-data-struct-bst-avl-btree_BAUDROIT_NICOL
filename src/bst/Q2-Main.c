@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdio.h>
 
 struct tree_node {
   int data; // ou int key + void* data;
@@ -8,8 +9,33 @@ struct tree_node {
 };
 
 typedef struct tree_node TreeNode;
-
 typedef void (*process_fn)(struct tree_node *);
+
+void preorder(struct tree_node *n, process_fn process) {
+    if (!n) return;
+    process(n);
+    preorder(n->left, process);
+    preorder(n->right, process);
+}
+
+void inorder(struct tree_node *n, process_fn process) {
+    if (!n) return;
+    inorder(n->left, process);
+    process(n);
+    inorder(n->right, process);
+}
+
+void postorder(struct tree_node *n, process_fn process) {
+    if (!n) return;
+    postorder(n->left, process);
+    postorder(n->right, process);
+    process(n);
+}
+
+void print_node(struct tree_node *n) {
+    printf("%c ", n->data);
+}
+
 int main() {
   TreeNode root = {
     .data = 'F',
@@ -32,4 +58,5 @@ int main() {
       },
     },
   };
+  preorder(&root, print_node);
 }

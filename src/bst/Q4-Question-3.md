@@ -1,0 +1,2 @@
+Expliquer en quelques phrases la stratégie générale de votre solution (sans rentrer dans chaque ligne de code). (1 pt)
+L'idée général est de constament conserver à l'aide de prev d'où on vient afin de pouvoir savoir où aller ensuite, par exemple si prev est le parent de curr (on vient de decendre), on descend plus bas, si prev est le fils gauche de curr, on vien d'en bas à gauche on tente d'aller a droite ou on remonte, ou encore traite le noeud pour inorder, si prev est le file droit de curr, alors on continue de remonter, on a exploré le noeud il faut remonter

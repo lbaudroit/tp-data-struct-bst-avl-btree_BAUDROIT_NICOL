@@ -19,11 +19,51 @@ void preorder(struct tree_node *n, process_fn process) {
     preorder(n->right, process);
 }
 
+void iterative_preorder(struct tree_node *n, process_fn process) {
+    struct tree_node *curr = n, *prev = NULL;
+    while (curr) {
+        if (prev == curr->parent) {
+            process(curr);
+            if (curr->left) {
+                prev = curr;
+                curr = curr->left;
+                continue;
+            }
+            prev = NULL;
+        }
+        if (prev == curr->left) {
+            if (curr->right) {
+                prev = curr;
+                curr = curr->right;
+                continue;
+            }
+        }
+        prev = curr;
+        curr = curr->parent;
+    }
+}
+
 void inorder(struct tree_node *n, process_fn process) {
     if (!n) return;
     inorder(n->left, process);
     process(n);
     inorder(n->right, process);
+}
+
+void iterative_inorder(struct tree_node *n, process_fn process) {
+    struct tree_node *curr = n, *prev = NULL;
+    while (curr) {
+        if (prev == curr->parent) {
+            if (curr->left) { prev = curr; curr = curr->left; continue; }
+            prev = NULL;
+        }
+        if (prev == curr->left) {
+            process(curr);
+            if (curr->right) { prev = curr; curr = curr->right; continue; }
+        }
+        prev = curr;
+        curr = curr->parent;
+    }
 }
 
 void postorder(struct tree_node *n, process_fn process) {
@@ -76,24 +116,20 @@ struct tree_node *bst_insert(struct tree_node **root, int data) {
 
 int main() {
     TreeNode *root = node_new('F');
-    root->left = node_new('B');
-    root->left->left = node_new('A');
-    root->left->right = node_new('D');
-    root->left->right->left = node_new('C');
-    root->left->right->right = node_new('E');
-    root->right = node_new('G');
-    root->right->right = node_new('I');
-    root->right->right->left = node_new('H');
-    TreeNode *root2 = node_new('F');
-    bst_insert(&root2, 'B');
-    bst_insert(&root2, 'A');
-    bst_insert(&root2, 'D');
-    bst_insert(&root2, 'C');
-    bst_insert(&root2, 'E');
-    bst_insert(&root2, 'G');
-    bst_insert(&root2, 'I');
-    bst_insert(&root2, 'H');
+    bst_insert(&root, 'B');
+    bst_insert(&root, 'A');
+    bst_insert(&root, 'D');
+    bst_insert(&root, 'C');
+    bst_insert(&root, 'E');
+    bst_insert(&root, 'G');
+    bst_insert(&root, 'I');
+    bst_insert(&root, 'H');
     preorder(root, print_node);
     printf("\n");
-    preorder(root2, print_node);
+    iterative_preorder(root, print_node);
+    printf("\n");
+    inorder(root, print_node);
+    printf("\n");
+    iterative_inorder(root, print_node);
+    return 0;
 }

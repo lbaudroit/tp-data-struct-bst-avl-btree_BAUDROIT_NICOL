@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 struct tree_node {
   int data; // ou int key + void* data;
@@ -34,6 +35,15 @@ void postorder(struct tree_node *n, process_fn process) {
 
 void print_node(struct tree_node *n) {
     printf("%c ", n->data);
+}
+
+struct tree_node *node_new(int data) {
+    struct tree_node *n = malloc(sizeof(struct tree_node));
+    n->data = data;
+    n->parent = NULL;
+    n->left = NULL;
+    n->right = NULL;
+    return n;
 }
 
 int main() {

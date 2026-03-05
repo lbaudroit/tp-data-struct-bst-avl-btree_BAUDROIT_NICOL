@@ -45,32 +45,32 @@ Insertion de T :
 [ A ] [ I |  L ] [ R | T ]
 
 Insertion de H :
-      [ G | O ]
+         [ G | O ]
 [ A ] [ H  | I |  L ] [ R | T ] // violation, > 2 clés
 
 Éclatement et remontée de la valeur médiane (I) :
-   [ G | I | O ] // violation, > 2 clés
-[ A ][ H ][ L ][ R | T ]
+   [ G | I | O ]     // violation, > 2 clés
+[ A ][ H ][ L ] [ R | T ]
 
 Éclatement et remontée de la valeur médiane (I) :
               [ I ]
-      [ G ]          [ O ]
+      [ G ]           [ O ]
 [ A ]     [ H ]   [ L ]   [ R | T ]
 
 Insertion de M :
               [ I ]
-      [ G ]          [ O ]
+      [ G ]               [ O ]
 [ A ]     [ H ]   [ L | M ]   [ R | T ]
 
 Insertion de S :
               [ I ]
-      [ G ]          [ O ]
-[ A ]     [ H ]   [ L | M ]   [ R | S | T ] // violation, > 2 clés
+      [ G ]            [ O ]
+[ A ]     [ H ][ L | M ]   [ R | S | T ] // violation, > 2 clés
 
 Éclatement et remontée de la valeur médiane (S) :
                     [ I ]
-            [ G ]            [ O | S]
-[ A ]     [ H ]   [ L | M ]    [ R ][ T ]
+            [ G ]        [ O | S ]
+[ A ]     [ H ]   [ L | M ][ R ][ T ]
 
 Vérifié avec https://www.cs.usfca.edu/~galles/visualization/BTree.html
 

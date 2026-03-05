@@ -91,7 +91,15 @@ void postorder(struct tree_node *n, process_fn process) {
 }
 
 void print_node(struct tree_node *n) {
-    printf("%c ", n->data);
+    printf("%d ", n->data);
+}
+
+void tree_free(struct tree_node *subroot) {
+    if (!subroot) return;
+    postorder(subroot->left, (process_fn)(void (*)(struct tree_node *))free);
+    postorder(subroot->right, (process_fn)(void (*)(struct tree_node *))free);
+    subroot->left = NULL;
+    subroot->right = NULL;
 }
 
 struct tree_node *node_new(int data) {
@@ -131,16 +139,62 @@ struct tree_node *bst_insert(struct tree_node **root, int data) {
     return new_node;
 }
 
+struct tree_node *tree_delete(struct tree_node **root, int key) {
+    struct tree_node *curr = *root;
+
+    // Trouve le Node qui correpons
+    while (curr != NULL && curr->data != key) {
+        if (key < curr->data) curr = curr->left;
+        else curr = curr->right;
+    }
+    if (curr == NULL) return NULL;
+
+    struct tree_node *to_del; // la node a delete
+    struct tree_node *to_move; // l'enfant qui irai a ca place
+
+    if (curr->left == NULL || curr->right == NULL) {
+        to_del = curr; // Si il a pas d'enfant ou un seul, il faut le supprimer
+    } else {
+        to_del = curr->right; // Si il y en as deux il faudrat trouver la feuille qui prendrais le mieux la valeur (la plus a droite puis en bas a gauche uniquement, elle prendrat la place de curr à la fin)
+        while (to_del->left)
+            to_del = to_del->left;
+    }
+
+    if (to_del->left) // Trouve avec quel enfant il faut faire la liaison avec l'ancien parent
+        to_move = to_del->left;
+    else
+        to_move = to_del->right;
+    //  Modifie la reference du parent du fils
+    if (to_move) to_move->parent = to_del->parent;
+
+    if (to_del->parent == NULL) {
+        *root = to_move;
+    } else if (to_del == to_del->parent->left) { // Modifie la reference enfant du parent
+        to_del->parent->left = to_move;
+    } else {
+        to_del->parent->right = to_move;
+    }
+
+    if (to_del != curr) { // Dans le cas deux enfant, inverse la valeur de to_del et curr, comme ca la valeur to_del est placé dans l'arbre et disparait pas
+        curr->data = to_del->data;
+    }
+
+    free(to_del);
+    return *root;
+}
+
 int main() {
-    TreeNode *root = node_new('F');
-    bst_insert(&root, 'B');
-    bst_insert(&root, 'A');
-    bst_insert(&root, 'D');
-    bst_insert(&root, 'C');
-    bst_insert(&root, 'E');
-    bst_insert(&root, 'G');
-    bst_insert(&root, 'I');
-    bst_insert(&root, 'H');
+    TreeNode *root = node_new(10);
+    bst_insert(&root, 2);
+    bst_insert(&root, 25);
+    bst_insert(&root, 15);
+    bst_insert(&root, 30);
+    bst_insert(&root, 12);;
+    bst_insert(&root, 20);
+    bst_insert(&root, 16);
+    bst_insert(&root, 24);
+    bst_insert(&root, 17);
+    bst_insert(&root, 22);
     preorder(root, print_node);
     printf("\n");
     iterative_preorder(root, print_node);
@@ -148,5 +202,22 @@ int main() {
     inorder(root, print_node);
     printf("\n");
     iterative_inorder(root, print_node);
+    printf("\n");
+    //tree_free(root->left);
+    preorder(root, print_node);
+    printf("\n");
+
+    printf("Original Inorder: ");
+    preorder(root, print_node); // Should be sorted
+    printf("\n");
+
+    struct tree_node *d1 = tree_delete(&root, 24);
+    struct tree_node *d2 = tree_delete(&root, 15);
+    //struct tree_node *d3 = tree_delete(&root, 10);
+
+    printf("After Deletions (Inorder): ");
+    preorder(root, print_node);
+    printf("\n");
+
     return 0;
 }

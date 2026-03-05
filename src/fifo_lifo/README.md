@@ -40,3 +40,6 @@ pop() => on récupère *, la pile est vide
 
 On peut à nouveau calculer, on obtient 7*2=14
 push(14), la pile vaut [14]
+
+## 4. Vous pouvez vous aidez de l’exo-3 en C token, mais surtout expliquez la différence en complexité spatial vs une solution IA utilisant malloc pour le split des tokens (bonus 4 pts)
+Une solution utilisant maloc prend de l'espace inutile supplémentaire (création d'un tableau) augmentant également le temps de traitement, tandis que strtok va simplement remplacer les espace par des \o similaire à l'exercice 3 effectuant dans les cours de C, n'augmentant donc pas dutout l'espace mémoire utilisé.

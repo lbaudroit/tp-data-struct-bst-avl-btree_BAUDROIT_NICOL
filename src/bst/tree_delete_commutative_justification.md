@@ -1,0 +1,1 @@
+Non, la suppriession des noeuds n'est pas commutative, sauf si on explore uniquement en parcours inorder, celui ca renvoyer de manière trier il n'y a pas de soucis, en revanche pour les autres parcours oui, par example quant on supprime un noeud avec deux enfant, on se repose sur le successeur, en revanche une autre suppression peut change qui est ce successeur

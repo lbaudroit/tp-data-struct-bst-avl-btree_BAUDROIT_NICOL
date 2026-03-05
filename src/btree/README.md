@@ -10,6 +10,8 @@ t = 3 donc
 3/2 = 1
 
 ## Construction de l'arbre par étapes
+Visiblement, il fallait utiliser le degré minimum et non pas l'ordre.
+https://stackoverflow.com/a/45826413
 
 Insertion de A :
 [ A ]
@@ -74,3 +76,24 @@ Insertion de S :
 
 Vérifié avec https://www.cs.usfca.edu/~galles/visualization/BTree.html
 
+## Nombre de clés et hauteur
+Dans le cas où le B-tree est entièrement rempli.
+On aura le maximum d'enfants, donc m, enfants pour chaque nœud, donc un total de m^h
+(m nœuds pour chaque nœud du niveau précédent).
+Chaque nœud rempli au maximum aura m-1 clés, donc un total de (m-1)(m ^ h) clés au total.
+
+Un B-tree gagne en hauteur lorsqu'on effectue des éclatements.
+
+## Recherche et complexité
+On considère la complexité d'une recherche dichotomique de clé dans un nœud O(log(n))
+Dans le pire cas, on devra descendre jusqu'aux feuilles (donc parcourir la hauteur), dans le meilleur on s'arrête au premier nœud.
+Ainsi, on sera toujours en log(c * n)) (avec c entre h et 1) donc O(log(n))
+On peut considérer que h est de l'ordre de log n, auquel cas on est en O(log(n)^2)
+
+## Minimum, prédécesseur, suppression
+Pour trouver la clé de valeur minimum, on doit naviguer à gauche jusqu'à la feuille et prendre la valeur la plus à gauche.
+
+Pour trouver le prédécesseur d'une clé :
+- s'il existe une clé précédente dans le nœud courant, on la prend
+- si la clé possède un sous-arbre gauche, il nous faut prendre la plus grande clé de ce sous-arbre (similairement à la recherche du minimum de la question précédente)
+- s'il n'y a ni clé précédente ni sous-arbre gauche, il nous faut remonter l'arbre jusqu'à la première clé dont le nœud actuel constitue le sous-arbre droit

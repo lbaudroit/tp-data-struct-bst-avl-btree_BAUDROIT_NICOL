@@ -22,28 +22,28 @@ void preorder(struct tree_node *n, process_fn process) {
 
 // Iterative version  = n'utilise pas la récurtion
 void iterative_preorder(struct tree_node *n, process_fn process) {
-    struct tree_node *curr = n;
-    struct tree_node *prev = NULL; // Previous pour ce souvenir d'où l'on vient à la boucle précédente, évitent alors l'utilisation de la stack
-    while (curr) {
-        if (prev == curr->parent) { // Si nous venons de décendre dans l'arbre alors on s'execute d'abord puis on cherche a descendre plus
-            process(curr);
-            if (curr->left) {
-                prev = curr;
-                curr = curr->left;
+    struct tree_node *current_node = n;
+    struct tree_node *previous_node = NULL; // Previous pour ce souvenir d'où l'on vient à la boucle précédente, évitent alors l'utilisation de la stack
+    while (current_node) {
+        if (previous_node == current_node->parent) { // Si nous venons de décendre dans l'arbre alors on s'execute d'abord puis on cherche a descendre plus
+            process(current_node);
+            if (current_node->left) {
+                previous_node = current_node;
+                current_node = current_node->left;
             } else {
-                prev = NULL;
+                previous_node = NULL;
             }
-        } else if (prev == curr->left) { // Si on vient de dire que la gauche est null, on vérifie la droite ou si on vient de remonter de la branche gauche
-            if (curr->right) {
-                prev = curr;
-                curr = curr->right;
+        } else if (previous_node == current_node->left) { // Si on vient de dire que la gauche est null, on vérifie la droite ou si on vient de remonter de la branche gauche
+            if (current_node->right) {
+                previous_node = current_node;
+                current_node = current_node->right;
             } else {
-                prev = curr;
-                curr = curr->parent;
+                previous_node = current_node;
+                current_node = current_node->parent;
             }
         } else { // Si on vient de remonter mais que rien n'est disponible à droite
-            prev = curr;
-            curr = curr->parent;
+            previous_node = current_node;
+            current_node = current_node->parent;
         }
     }
 }
@@ -57,27 +57,27 @@ void inorder(struct tree_node *n, process_fn process) {
 
 // Même logique que pour l'proder iteratif en haut, mais en metant le process pas au même endroit, après être "remonté" d'à gauche, (ou avoir vérifier que la gauche est null)
 void iterative_inorder(struct tree_node *n, process_fn process) {
-    struct tree_node *curr = n, *prev = NULL;
-    while (curr) {
-        if (prev == curr->parent) {
-            if (curr->left) {
-                prev = curr;
-                curr = curr->left;
+    struct tree_node *current_node = n, *previous_node = NULL;
+    while (current_node) {
+        if (previous_node == current_node->parent) {
+            if (current_node->left) {
+                previous_node = current_node;
+                current_node = current_node->left;
             } else {
-                prev = NULL;
+                previous_node = NULL;
             }
-        } else if (prev == curr->left) {
-            process(curr);
-            if (curr->right) {
-                prev = curr;
-                curr = curr->right;
+        } else if (previous_node == current_node->left) {
+            process(current_node);
+            if (current_node->right) {
+                previous_node = current_node;
+                current_node = current_node->right;
             } else {
-                prev = curr;
-                curr = curr->parent;
+                previous_node = current_node;
+                current_node = current_node->parent;
             }
         } else {
-            prev = curr;
-            curr = curr->parent;
+            previous_node = current_node;
+            current_node = current_node->parent;
         }
     }
 }
@@ -117,113 +117,113 @@ struct tree_node *bst_insert(struct tree_node **root, int data) {
         return *root;
     }
 
-    struct tree_node *current = *root;
-    struct tree_node *parent = NULL;
+    struct tree_node *current_node = *root;
+    struct tree_node *parent_node = NULL;
 
-    while (current) { // Trouve la feuille la plus adapté à acceuilire le nouveau noeud
-        parent = current;
-        if (data < current->data) {
-            current = current->left;
+    while (current_node) { // Trouve la feuille la plus adapté à acceuilire le nouveau noeud
+        parent_node = current_node;
+        if (data < current_node->data) {
+            current_node = current_node->left;
         } else {
-            current = current->right;
+            current_node = current_node->right;
         }
     }
 
     struct tree_node *new_node = node_new(data); // Crée le noeud puis l'ajoute a gauche ou a droit de la feuille trouvé selon le besoin
-    new_node->parent = parent;
-    if (data < parent->data) {
-        parent->left = new_node;
+    new_node->parent = parent_node;
+    if (data < parent_node->data) {
+        parent_node->left = new_node;
     } else {
-        parent->right = new_node;
+        parent_node->right = new_node;
     }
     return new_node;
 }
 
 struct tree_node *tree_delete(struct tree_node **root, int key) {
-    struct tree_node *curr = *root;
+    struct tree_node *current_node = *root;
 
     // Trouve le Node qui correpons
-    while (curr != NULL && curr->data != key) {
-        if (key < curr->data) curr = curr->left;
-        else curr = curr->right;
+    while (current_node != NULL && current_node->data != key) {
+        if (key < current_node->data) current_node = current_node->left;
+        else current_node = current_node->right;
     }
-    if (curr == NULL) return NULL;
+    if (current_node == NULL) return NULL;
 
-    struct tree_node *to_del; // la node a delete
-    struct tree_node *to_move; // l'enfant qui irai a ca place
+    struct tree_node *node_to_delete; // la node a delete
+    struct tree_node *node_to_move; // l'enfant qui irai a ca place
 
-    if (curr->left == NULL || curr->right == NULL) {
-        to_del = curr; // Si il a pas d'enfant ou un seul, il faut le supprimer
+    if (current_node->left == NULL || current_node->right == NULL) {
+        node_to_delete = current_node; // Si il a pas d'enfant ou un seul, il faut le supprimer
     } else {
-        to_del = curr->right; // Si il y en as deux il faudrat trouver la feuille qui prendrais le mieux la valeur (la plus a droite puis en bas a gauche uniquement, elle prendrat la place de curr à la fin)
-        while (to_del->left)
-            to_del = to_del->left;
+        node_to_delete = current_node->right; // Si il y en as deux il faudrat trouver la feuille qui prendrais le mieux la valeur (la plus a droite puis en bas a gauche uniquement, elle prendrat la place de curr à la fin)
+        while (node_to_delete->left)
+            node_to_delete = node_to_delete->left;
     }
 
-    if (to_del->left) // Trouve avec quel enfant il faut faire la liaison avec l'ancien parent
-        to_move = to_del->left;
+    if (node_to_delete->left) // Trouve avec quel enfant il faut faire la liaison avec l'ancien parent
+        node_to_move = node_to_delete->left;
     else
-        to_move = to_del->right;
+        node_to_move = node_to_delete->right;
     //  Modifie la reference du parent du fils
-    if (to_move) to_move->parent = to_del->parent;
+    if (node_to_move) node_to_move->parent = node_to_delete->parent;
 
-    if (to_del->parent == NULL) {
-        *root = to_move;
-    } else if (to_del == to_del->parent->left) { // Modifie la reference enfant du parent
-        to_del->parent->left = to_move;
+    if (node_to_delete->parent == NULL) {
+        *root = node_to_move;
+    } else if (node_to_delete == node_to_delete->parent->left) { // Modifie la reference enfant du parent
+        node_to_delete->parent->left = node_to_move;
     } else {
-        to_del->parent->right = to_move;
+        node_to_delete->parent->right = node_to_move;
     }
 
-    if (to_del != curr) { // Dans le cas deux enfant, inverse la valeur de to_del et curr, comme ca la valeur to_del est placé dans l'arbre et disparait pas
-        curr->data = to_del->data;
+    if (node_to_delete != current_node) { // Dans le cas deux enfant, inverse la valeur de to_del et curr, comme ca la valeur to_del est placé dans l'arbre et disparait pas
+        current_node->data = node_to_delete->data;
     }
 
-    free(to_del);
+    free(node_to_delete);
     return *root;
 }
 
 struct tree_node *tree_delete_predecessor(struct tree_node **root, int key) {
-    struct tree_node *curr = *root;
+    struct tree_node *current_node = *root;
 
-    while (curr != NULL && curr->data != key) {
-        if (key < curr->data) curr = curr->left;
-        else curr = curr->right;
+    while (current_node != NULL && current_node->data != key) {
+        if (key < current_node->data) current_node = current_node->left;
+        else current_node = current_node->right;
     }
-    if (curr == NULL) return NULL;
+    if (current_node == NULL) return NULL;
 
-    struct tree_node *to_del;
-    struct tree_node *to_move;
+    struct tree_node *node_to_delete;
+    struct tree_node *node_to_move;
 
-    if (curr->left == NULL || curr->right == NULL) {
-        to_del = curr;
+    if (current_node->left == NULL || current_node->right == NULL) {
+        node_to_delete = current_node;
     } else {
         // changeemnt de logique : go left , then keep it going right
-        to_del = curr->left;
-        while (to_del->right)
-            to_del = to_del->right;
+        node_to_delete = current_node->left;
+        while (node_to_delete->right)
+            node_to_delete = node_to_delete->right;
     }
 
-    if (to_del->left)
-        to_move = to_del->left;
+    if (node_to_delete->left)
+        node_to_move = node_to_delete->left;
     else
-        to_move = to_del->right;
+        node_to_move = node_to_delete->right;
 
-    if (to_move) to_move->parent = to_del->parent;
+    if (node_to_move) node_to_move->parent = node_to_delete->parent;
 
-    if (to_del->parent == NULL) {
-        *root = to_move;
-    } else if (to_del == to_del->parent->left) {
-        to_del->parent->left = to_move;
+    if (node_to_delete->parent == NULL) {
+        *root = node_to_move;
+    } else if (node_to_delete == node_to_delete->parent->left) {
+        node_to_delete->parent->left = node_to_move;
     } else {
-        to_del->parent->right = to_move;
+        node_to_delete->parent->right = node_to_move;
     }
 
-    if (to_del != curr) {
-        curr->data = to_del->data;
+    if (node_to_delete != current_node) {
+        current_node->data = node_to_delete->data;
     }
 
-    free(to_del);
+    free(node_to_delete);
     return *root;
 }
 

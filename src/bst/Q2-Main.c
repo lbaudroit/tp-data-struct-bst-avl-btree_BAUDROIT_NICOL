@@ -183,6 +183,61 @@ struct tree_node *tree_delete(struct tree_node **root, int key) {
     return *root;
 }
 
+struct tree_node *tree_delete_predecessor(struct tree_node **root, int key) {
+    struct tree_node *curr = *root;
+
+    while (curr != NULL && curr->data != key) {
+        if (key < curr->data) curr = curr->left;
+        else curr = curr->right;
+    }
+    if (curr == NULL) return NULL;
+
+    struct tree_node *to_del;
+    struct tree_node *to_move;
+
+    if (curr->left == NULL || curr->right == NULL) {
+        to_del = curr;
+    } else {
+        // changeemnt de logique : go left , then keep it going right
+        to_del = curr->left;
+        while (to_del->right)
+            to_del = to_del->right;
+    }
+
+    if (to_del->left)
+        to_move = to_del->left;
+    else
+        to_move = to_del->right;
+
+    if (to_move) to_move->parent = to_del->parent;
+
+    if (to_del->parent == NULL) {
+        *root = to_move;
+    } else if (to_del == to_del->parent->left) {
+        to_del->parent->left = to_move;
+    } else {
+        to_del->parent->right = to_move;
+    }
+
+    if (to_del != curr) {
+        curr->data = to_del->data;
+    }
+
+    free(to_del);
+    return *root;
+}
+
+struct tree_node *tree_delete_randomize(struct tree_node **root, int key) {
+    if ((*root)->left != NULL && (*root)->right != NULL) {
+        if (rand() % 2 == 0) {
+            return tree_delete_predecessor(root, key);
+        } else {
+            return tree_delete(root, key);
+        }
+    } else
+        return tree_delete(root, key);
+}
+
 int main() {
     TreeNode *root = node_new(10);
     bst_insert(&root, 2);
@@ -211,9 +266,8 @@ int main() {
     preorder(root, print_node);
     printf("\n");
 
-    struct tree_node *d1 = tree_delete(&root, 24);
-    struct tree_node *d2 = tree_delete(&root, 15);
-    //struct tree_node *d3 = tree_delete(&root, 10);
+    struct tree_node *d1 = tree_delete_randomize(&root, 24);
+    struct tree_node *d2 = tree_delete_randomize(&root, 15);
 
     printf("After Deletions (Inorder): ");
     preorder(root, print_node);

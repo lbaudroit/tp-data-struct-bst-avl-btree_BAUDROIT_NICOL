@@ -208,7 +208,7 @@ int main() {
     printf("\n");
 
     printf("Original Inorder: ");
-    preorder(root, print_node); // Should be sorted
+    preorder(root, print_node);
     printf("\n");
 
     struct tree_node *d1 = tree_delete(&root, 24);

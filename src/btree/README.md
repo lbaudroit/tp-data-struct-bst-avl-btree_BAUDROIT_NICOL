@@ -2,109 +2,81 @@
 Lettres à ajouter : A L G O R I T H M S
 Dans l'ordre ASCII : A G H I L M O R S T
 
-t = 3 donc
-- les nœuds contiennent entre 0 et 2 clés
-(3/2)-1= 0 (impossible donc 1) et (3-1)=2 
-
-- les nœuds non-racine sont entre 1 et 3 fils
-3/2 = 1
+t = 3 donc les noeuds ont entre 2 et 5 clés, donc entre 3 et 6 enfants.
 
 ## Construction de l'arbre par étapes
-Visiblement, il fallait utiliser le degré minimum et non pas l'ordre.
+En faisant l'exercice, j'ai appris la différence entre degré et ordre... et aussi à lire les consignes
 https://stackoverflow.com/a/45826413
+Voici la version corrigée :
 
 Insertion de A :
-```
+```text
 [ A ]
 ```
 
 Insertion de L :
-```
+```text
 [ A | L ]
 ```
 
 Insertion de G :
-```
-[ A | G | L ] // violation, > 2 clés
-```
-
-Éclatement et remontée de la valeur médiane (G) :
-```
-    [ G ]
- [ A ] [ L ]
+```text
+[ A | G | L ] 
 ```
 
 Insertion de O :
-```
-   [ G ]
-[ A ] [ L | O ]
+```text
+[ A | G | L | O ]
 ```
 
 Insertion de R :
-```
-   [ G ]
-[ A ] [ L | O | R ] // violation, > 2 clés
-```
-
-Eclatement et remontée de la valeur médiane (O) :
-```
-    [ G | O ]
-[ A ] [ L ] [ R ]
+```text
+[ A | G | L | O | R ]
 ```
 
 Insertion de I :
+```text
+[ A | G | I | L | O | R ] // > 5 clés, 
 ```
-      [ G | O ]
-[ A ] [ I |  L ] [ R ]
+
+Éclatement et remontée de la valeur médiane basse (I) :
+```text
+       [ I ]
+[ A | G ] [ L | O | R ]
 ```
 
 Insertion de T :
-```
-      [ G | O ]
-[ A ] [ I |  L ] [ R | T ]
+```text
+       [ I ]
+[ A | G ] [ L | O | R | T ]
 ```
 
 Insertion de H :
-```
-         [ G | O ]
-[ A ] [ H  | I |  L ] [ R | T ] // violation, > 2 clés
-```
-
-Éclatement et remontée de la valeur médiane (I) :
-```
-   [ G | I | O ]     // violation, > 2 clés
-[ A ][ H ][ L ] [ R | T ]
-```
-
-Éclatement et remontée de la valeur médiane (I) :
-```
-              [ I ]
-      [ G ]           [ O ]
-[ A ]     [ H ]   [ L ]   [ R | T ]
+```text
+            [ I ]
+[ A | G | H ] [ L | O | R | T ]
 ```
 
 Insertion de M :
-```
-              [ I ]
-      [ G ]               [ O ]
-[ A ]     [ H ]   [ L | M ]   [ R | T ]
+```text
+            [ I ]
+[ A | G | H ] [ L | M | O | R | T ]
 ```
 
 Insertion de S :
-```
-              [ I ]
-      [ G ]            [ O ]
-[ A ]     [ H ][ L | M ]   [ R | S | T ] // violation, > 2 clés
+```text
+            [ I ]
+[ A | G | H ] [ L | M | O | R | S | T ]
 ```
 
-Éclatement et remontée de la valeur médiane (S) :
-```
-                    [ I ]
-            [ G ]        [ O | S ]
-[ A ]     [ H ]   [ L | M ][ R ][ T ]
+Éclatement et remontée de la valeur médiane (O) :
+```text
+                [ I | O ]
+[ A | G | H ]   [ L | M ]   [ R | S | T ]
 ```
 
 Vérifié avec https://www.cs.usfca.edu/~galles/visualization/BTree.html
+(cette fois-ci en mettant le degré à 6)
 
 ## Nombre de clés et hauteur
 Dans le cas où le B-tree est entièrement rempli.

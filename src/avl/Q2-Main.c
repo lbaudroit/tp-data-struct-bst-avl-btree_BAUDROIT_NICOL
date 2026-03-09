@@ -16,10 +16,10 @@ int get_height_or_zero(avl_node *node) {
     return node ? node->height : 0;
 }
 
-avl_node *avl_create_node(int value, int height) {
+avl_node *avl_create_node(int value) {
     avl_node *node = malloc(sizeof(avl_node));
     node->key = value;
-    node->height = height;
+    node->height = 0;
     node->parent = NULL;
     node->left = NULL;
     node->right = NULL;
@@ -75,6 +75,7 @@ avl_node *left_rotation(avl_node *z) {
 }
 
 int avl_calculate_balance_factor(avl_node *node) {
+    // le -1 permet de différencier les noeuds avec feuilles et sans
     int leftHeight = node->left != NULL ? node->left->height : -1;
     int rightHeight = node->right != NULL ? node->right->height : -1;
 
@@ -109,6 +110,66 @@ avl_node *avl_balance(avl_node *x) {
     return left_rotation(x);
 }
 
+avl_node *avl_insert(avl_node *root, avl_node *x) {
+    if (!root) {
+        return x;
+    }
+
+    int key = x->key;
+
+    avl_node *current_node = root;
+    avl_node *parent_node = NULL;
+
+    // trouver la feuille ou mettre le noeud
+    while (current_node) {
+        parent_node = current_node;
+        if (key < current_node->key) {
+            current_node = current_node->left;
+        } else {
+            current_node = current_node->right;
+        }
+    }
+
+    // ajout à droite ou à gauche
+    x->parent = parent_node;
+    if (key < parent_node->key) {
+        parent_node->left = x;
+    } else {
+        parent_node->right = x;
+    }
+
+
+    // équilibrage de l'arbre
+    avl_node* parent_before_balance = parent_node;
+    while (parent_node) {
+        avl_node* grand_parent = parent_node->parent;
+
+        avl_recalculate_height_from_valid_children(parent_node);
+        parent_node = avl_balance(parent_node);
+
+        // si on a changé de noeud d'attache, on le raccroche au parent
+        // ou on le renvoie si on est à la racine
+        if (parent_before_balance != parent_node) {
+            avl_recalculate_height_from_valid_children(parent_node);
+            parent_node->parent = grand_parent;
+
+            if (!grand_parent) {
+                return parent_node;
+            }
+            if (grand_parent -> left == parent_before_balance) {
+                grand_parent -> left = parent_node;
+            } else {
+                grand_parent -> right = parent_node;
+            }
+        }
+
+        parent_node = parent_node->parent;
+        parent_before_balance = parent_node;
+    }
+    return root;
+}
+
+
 void avl_destroy(avl_node *x) {
     if (x) {
         avl_destroy(x->right);
@@ -129,97 +190,71 @@ void avl_print_tree(avl_node *node, int depth) {
 }
 
 avl_node *test_ll() {
-    avl_node *z = avl_create_node(30, 2);
-    avl_node *y = avl_create_node(20, 1);
-    avl_node *x = avl_create_node(10, 0);
+    avl_node *z = avl_create_node(30);
+    avl_node *y = avl_create_node(20);
+    avl_node *x = avl_create_node(10);
 
-    z->left = y;
-    y->parent = z;
-
-    y->left = x;
-    x->parent = y;
+    z = avl_insert(z, y);
+    z = avl_insert(z, x);
 
     return z;
 }
 
 avl_node *test_rr() {
-    avl_node *z = avl_create_node(10, 2);
-    avl_node *y = avl_create_node(20, 1);
-    avl_node *x = avl_create_node(30, 0);
+    avl_node *z = avl_create_node(10);
+    avl_node *y = avl_create_node(20);
+    avl_node *x = avl_create_node(30);
 
-    z->right = y;
-    y->parent = z;
-
-    y->right = x;
-    x->parent = y;
+    z = avl_insert(z, y);
+    z = avl_insert(z, x);
 
     return z;
 }
 
 avl_node *test_lr() {
-    avl_node *z = avl_create_node(30, 2);
-    avl_node *y = avl_create_node(10, 1);
-    avl_node *x = avl_create_node(20, 0);
+    avl_node *z = avl_create_node(30);
+    avl_node *y = avl_create_node(10);
+    avl_node *x = avl_create_node(20);
 
-    z->left = y;
-    y->parent = z;
-
-    y->right = x;
-    x->parent = y;
+    z = avl_insert(z, y);
+    z = avl_insert(z, x);
 
     return z;
 }
 
 avl_node *test_rl() {
-    avl_node *z = avl_create_node(10, 2);
-    avl_node *y = avl_create_node(30, 1);
-    avl_node *x = avl_create_node(20, 0);
+    avl_node *z = avl_create_node(10);
+    avl_node *y = avl_create_node(30);
+    avl_node *x = avl_create_node(20);
 
-    z->right = y;
-    y->parent = z;
-
-    y->left = x;
-    x->parent = y;
+    z = avl_insert(z, y);
+    z = avl_insert(z, x);
 
     return z;
 }
 
 avl_node *test_balanced() {
-    avl_node *root = avl_create_node(30, 2);
-    avl_node *rootleft = avl_create_node(20, 1);
-    avl_node *rootright = avl_create_node(40, 0);
-    avl_node *rootleftleft = avl_create_node(10, 0);
-    avl_node *rootleftright = avl_create_node(25, 0);
+    avl_node *a = avl_create_node(40);
+    avl_node *b = avl_create_node(30);
+    avl_node *c = avl_create_node(20);
+    avl_node *d = avl_create_node(25);
+    avl_node *e = avl_create_node(10);
 
-    root->left = rootleft;
-    rootleft->parent = root;
+    a = avl_insert(a, b);
+    a = avl_insert(a, c);
+    a = avl_insert(a, d);
+    a = avl_insert(a, e);
 
-    root->right = rootright;
-    rootright->parent = root;
-
-    root->left->left = rootleftleft;
-    rootleftleft->parent = rootleft;
-
-    root->left->right = rootleftright;
-    rootleftright->parent = rootleft;
-
-    return root;
+    return a;
 }
 
-void run_test(const char *str, avl_node *start_tree) {
+void run_test(const char *str, avl_node *tree) {
     printf(str);
     printf("\nAvant :\n");
-    avl_print_tree(start_tree, 0);
-    printf("---\n");
-
-    avl_node *end_tree = avl_balance(start_tree);
-
-    printf("Après :\n");
-    avl_print_tree(end_tree, 0);
-
+    avl_print_tree(tree, 0);
     printf("-------------\n");
 
-    avl_destroy(end_tree);
+    avl_destroy(tree);
 }
 
 int main() {
